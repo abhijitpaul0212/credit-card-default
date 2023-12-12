@@ -9,4 +9,3 @@ imblearn
 mlflow
 flask
 pymongo[srv]
--e .
