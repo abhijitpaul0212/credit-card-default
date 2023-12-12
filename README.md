@@ -1,3 +1,14 @@
+---
+license: mit
+title: Credit Card Defaults Prediction
+sdk: streamlit
+emoji: 🦀
+colorFrom: green
+colorTo: indigo
+app_file: streamlit_app.py
+pinned: false
+---
+
 # Credit Card Default Prediction App
 
 ## OBJECTIVE
