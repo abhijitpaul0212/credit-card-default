@@ -59,4 +59,5 @@ MongoDB
 
 ## LIVE
 * https://credit-card-defaults-prediction.streamlit.app/
+* https://huggingface.co/spaces/abhijitpaul/credit-card-default
 
