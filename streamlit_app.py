@@ -15,9 +15,9 @@ data.drop(['DEFAULT_PAYMENT', "_id", "ID"], axis=1, inplace=True)
 
 # Design Streamlit Page
 st.write("""
-# Credit Card Defaults Prediction
+# Credit Card Default Detection
 
-This app predicts the **Credit Card Defaults**!
+This app predicts the **Credit Card Payment Defaults**!
 """)
 st.write('---')
 
