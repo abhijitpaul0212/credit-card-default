@@ -52,7 +52,12 @@ MongoDB
 7. XGBoost
 
 ## Final Result
-The XGBClassifier model emerged as the most effective, achieving an accuracy of 83% on the test set along with Recall: 80%, ROC-AUC: 91% Precision: 84% and F1: 81%.
+The XGBClassifier model emerged as the most effective have below metric scores:
+* Accuracy: 83 %
+* Recall: 80 %
+* ROC-AUC: 91 %
+* Precision: 84 %
+* F1: 81 %
 
 ## Deployed URLs
 * https://credit-card-defaults-prediction.streamlit.app/
