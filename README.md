@@ -73,8 +73,9 @@ The XGBClassifier model emerged as the most effective have below metric scores:
 
 
 ## Contributors
-Gouthami K
-Abhijit Paul
+* Abhijit Paul
+* Gouthami K
+
 
 ## License
 This project is licensed under the MIT License.
