@@ -53,11 +53,11 @@ MongoDB
 
 ## Final Result
 The XGBClassifier model emerged as the most effective have below metric scores:
-* Accuracy: 83 %
-* Recall: 80 %
-* ROC-AUC: 91 %
-* Precision: 84 %
-* F1: 81 %
+* Accuracy: 83%
+* Recall: 80%
+* ROC-AUC: 91%
+* Precision: 84%
+* F1: 81%
 
 ## Deployed URLs
 * STREAMLIT: https://credit-card-defaults-prediction.streamlit.app/
@@ -73,12 +73,11 @@ The XGBClassifier model emerged as the most effective have below metric scores:
 6. Project Demo Video: [https://youtu.be/8lv5jNUXcKQ?si=Ff1MIxzQMp9MBvj1](https://youtu.be/kH6FAdevtmw)
 
 ## Snaptshot of HuggingFace Dashboard
-![image](https://github.com/abhijitpaul0212/Credit-Card-Default-Detection/assets/9966441/eb158011-03d0-45a2-833a-f643ef99ecdf)
+![CreditCardDefaultDetectionDashboard](https://github.com/abhijitpaul0212/Credit-Card-Default-Detection/assets/9966441/da9c2642-6a99-47bf-b517-55ea505eb588)
 
 ## Contributors
 * Abhijit Paul
 * Gouthami K
-
 
 ## License
 This project is licensed under the MIT License.
