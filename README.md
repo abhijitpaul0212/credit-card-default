@@ -49,9 +49,7 @@ MongoDB
 4. GradientBoostingClassifier
 5. KNeighborsClassifier
 6. DecisionTreeClassifier
-7. AdaBoost
-8. NaiveBayes
-9. XGBoost
+7. XGBoost
 
 ## Final Result
 The XGBClassifier model emerged as the most effective, achieving an accuracy of 83% on the test set along with Recall: 80%, ROC-AUC: 91% Precision: 84% and F1: 81%.
