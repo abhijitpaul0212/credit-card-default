@@ -10,3 +10,4 @@ mlflow
 flask
 pymongo[srv]
 gunicorn
+xgboost

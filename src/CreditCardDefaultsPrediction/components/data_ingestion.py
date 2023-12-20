@@ -6,12 +6,13 @@ from dataclasses import dataclass
 
 from src.CreditCardDefaultsPrediction.logger import logging
 from src.CreditCardDefaultsPrediction.exception import CustomException
-from src.CreditCardDefaultsPrediction.utils.data_processor import DBProcessor, CSVProcessor
+from src.CreditCardDefaultsPrediction.utils.data_processor import DBProcessor
 from src.CreditCardDefaultsPrediction.utils.utils import Utils
 
 from sklearn.model_selection import train_test_split
 import warnings
 warnings.filterwarnings("ignore")
+
 
 @dataclass
 class DataIngestionConfig:
@@ -31,16 +32,12 @@ class DataIngestion:
     def __init__(self):
         self.ingestion_config = DataIngestionConfig()
         self.utils = Utils()
-        # self.csv_processor = CSVProcessor()
         self.db_processor = DBProcessor()
 
     def initiate_data_ingestion(self):
         logging.info("Data Ingestion started")
 
         try:
-            # Read raw dataset directly from csv file
-            # data = self.utils.run_data_pipeline(self.csv_processor, "notebooks/data/raw_data", "UCI_Credit_Card_Defaults.csv", skiprows=1, skipinitialspace=True)
-
             # Read raw dataset from MongoDB database
             data = self.utils.run_data_pipeline(self.db_processor, "mongodb+srv://root:root@cluster0.k3s4vuf.mongodb.net/?retryWrites=true&w=majority&ssl=true", "credit_card_defaults/data")
 
@@ -50,17 +47,14 @@ class DataIngestion:
             logging.info("Raw dataset is saved in artifacts folder")
 
             train_data, test_data = train_test_split(data, test_size=0.33, random_state=42)
-            # val_data, test_data = train_test_split(test_data, test_size=0.50, random_state=42)
-            logging.info("Dataset is splitted into Train, Validation & Test data")
+            logging.info("Dataset is splitted into Train & Test data")
 
             train_data.to_csv(self.ingestion_config.train_data_path, index=False)
             test_data.to_csv(self.ingestion_config.test_data_path, index=False)
-            # val_data.to_csv(self.ingestion_config.val_data_path, index=False)
-            logging.info("Train, Test & validation dataset are saved in artifacts folder")
+            logging.info("Train & Test dataset are saved in artifacts folder")
 
             return (
                 self.ingestion_config.train_data_path,
-                # self.ingestion_config.val_data_path,
                 self.ingestion_config.test_data_path
             )
 

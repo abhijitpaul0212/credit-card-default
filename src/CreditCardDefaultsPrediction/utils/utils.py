@@ -5,11 +5,12 @@ import sys
 import os
 import pandas as pd
 import numpy as np
+from datetime import datetime
 from time import time
 from pymongo.mongo_client import MongoClient
 from src.CreditCardDefaultsPrediction.exception import CustomException
 from src.CreditCardDefaultsPrediction.logger import logging
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, cross_val_score
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score, accuracy_score, roc_auc_score
 from imblearn.over_sampling import SMOTE
 
@@ -83,7 +84,6 @@ class Utils:
         :param **kwargs: Pass a variable number of keyword arguments to the function
         :return: The processed data
         """
-        logging.info("Dataset loaded sucessfully")
         return data_processor.process_data(path, filename, **kwargs)
 
     def predict(self, model_name, model, features, label):
@@ -94,19 +94,16 @@ class Utils:
         :param features: DataFrame: Features to be used for prediction
         :param label: DataFrame: Label to be used for prediction
         :return: dict: A dictionary with the model, accuracy score, f-score, precision score and recall score
-        """
-        pred_label = model.predict(features)
-        logging.info("Model prediction completed")
-        logging.info("Confusion Matrix: \n{}".format(confusion_matrix(y_true=label, y_pred=pred_label)))        
+        """  
         self.MODEL_REPORT[model_name] = {
             'model': model,
-            'accuracy': accuracy_score(y_true=label, y_pred=pred_label),
-            'f1': f1_score(y_true=label, y_pred=pred_label),
-            'precision': precision_score(y_true=label, y_pred=pred_label),
-            'recall': recall_score(y_true=label, y_pred=pred_label),
-            'roc-auc': roc_auc_score(y_true=label, y_score=pred_label)}
-
-    def evaluate_models_with_hyperparameter(self, models: tuple, train_features, train_label, test_features, test_label, metric='accuracy'):
+            'accuracy': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='accuracy').mean(), 2),
+            'f1': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='f1').mean(), 2),
+            'precision': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='precision').mean(), 2),
+            'recall': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='recall').mean(), 2),
+            'roc_auc': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='roc_auc').mean(), 2)}
+        
+    def evaluate_models_with_hyperparameter(self, models: dict, train_features, train_label, test_features, test_label, metric='accuracy', verbose=0):
         """
         The evaluate_models function takes in a tuple of models and their parameters, 
         train_features, train_label, val_features and val_label. It then uses the RandomizedSearchCV function to find the best model for each model passed into it.
@@ -117,42 +114,52 @@ class Utils:
         :param val_features: DataFrame: Validation features to the evaluate_models function
         :param val_label: Validation labels to the predict function
         :return: tuple: The best model and a dictionary of the model report
-        """     
-        def find_model_by_score(dictionary, target_value):
-            for key, value in dictionary.items():
-                if value == target_value:
-                    return key
-            return None
+        """            
+        def timer(start_time=None):
+            if not start_time:
+                start_time = datetime.now()
+                return start_time
+            
+            elif start_time:
+                thour, temp_sec = divmod((datetime.now() - start_time).total_seconds(), 3600)
+                tmin, tsec = divmod(temp_sec, 60)
+                logging.info("Model took: {} hours {} minutes and {} seconds".format(thour, tmin, round(tsec, 2)))
 
         np.random.seed(42)        
         TRAINING_SCORE = {}
-        for items in models:
-            for model, param in items.items():                
-                model_name = str(model).split("()")[0]
-                logging.info("\n\n========================= {} =======================".format(model_name))
-                start = time()
-                cv = GridSearchCV(estimator=model, param_grid=param, cv=3, n_jobs=-1, scoring=metric)
-                cv.fit(train_features, train_label)
-                end = time()
-                logging.info("BEST PARAMS: {}".format(cv.best_params_))
-                logging.info("BEST SCORE: {}".format(cv.best_score_))
-                logging.info("Model took: {} secs".format(round(end-start, 4)))
-                TRAINING_SCORE[cv.best_estimator_] = cv.best_score_
+        for model_name, (model, params) in models.items():
+            # for model, param in items.items():                
+            logging.info("\n\n========================= {} =======================".format(model_name))
+            random_search_cv = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=5, scoring=metric, n_jobs=-1, cv=5, verbose=verbose, random_state=5)
 
+            start_time = timer(None)
+            random_search_cv.fit(train_features, train_label)
+            timer(start_time)
+
+            logging.info("BEST PARAMS: {}".format(random_search_cv.best_params_))
+            logging.info("BEST TRAINING SCORE USING HYPER-PARAMTERS: {}".format(round(random_search_cv.best_score_, 2)))
+            TRAINING_SCORE[model_name] = round(random_search_cv.best_score_, 2)
+
+            self.predict(model_name=model_name, model=random_search_cv.best_estimator_, features=test_features, label=test_label)
+            
         logging.info("All training scores: {}".format(TRAINING_SCORE))
+        logging.info("All testing scores: {}".format(self.MODEL_REPORT))
 
-        best_score = sorted([value for key, value in TRAINING_SCORE.items()], reverse=True)[0]
-        best_model = find_model_by_score(TRAINING_SCORE, best_score)
+        SCORES = []
+        for model_name, values in self.MODEL_REPORT.items():
+            for metric_name, score in values.items():
+                if metric_name == metric:
+                    SCORES.append((model_name, score))        
 
-        logging.info("Model got trained")
-        
-        model_name = str(best_model).split("()")[0]
-        self.predict(model_name=model_name, model=best_model, features=test_features, label=test_label)
+        best_score = sorted(SCORES, reverse=True)[0][1]
+        best_model_name = sorted(SCORES, reverse=True)[0][0]                
+        best_model = [values['model'] for model_name, values in self.MODEL_REPORT.items() if model_name == best_model_name][0]
 
-        logging.info("BEST MODEL: {}".format(model_name))
-        logging.info("TESTING SCORES: {}".format(self.MODEL_REPORT[model_name]))
+        logging.info("BEST MODEL: {}".format(best_model_name))
+        logging.info("BEST SCORE: {}".format(best_score))
 
-        return best_model, self.MODEL_REPORT
+        return best_model
+
     
     def evaluate_models(self, models: dict, train_features, train_label, test_features, test_label, metric='accuracy'):
         """

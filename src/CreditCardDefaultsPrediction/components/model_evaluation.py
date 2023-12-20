@@ -20,11 +20,11 @@ from src.CreditCardDefaultsPrediction.utils.utils import Utils
 class ModelEvaluation:
 
     def eval_metrics(self, actual, pred):
-        accuracy = accuracy_score(actual, pred)
-        f1 = f1_score(actual, pred)
-        precision = precision_score(actual, pred)
-        recall = recall_score(actual, pred)
-        roc_auc = roc_auc_score(actual, pred)
+        accuracy = round(accuracy_score(actual, pred), 2)
+        f1 = round(f1_score(actual, pred), 2)
+        precision = round(precision_score(actual, pred), 2)
+        recall = round(recall_score(actual, pred), 2)
+        roc_auc = round(roc_auc_score(actual, pred), 2)
         return accuracy, f1, precision, recall, roc_auc
     
     def initiate_model_evaluation(self, test_array):
@@ -46,7 +46,7 @@ class ModelEvaluation:
                 predicted_qualities = model.predict(X_test)
 
                 (accuracy, f1, precision, recall, roc_auc) = self.eval_metrics(actual=y_test, pred=predicted_qualities)
-                self.eval_metrics(actual=y_test, pred=predicted_qualities)
+                # self.eval_metrics(actual=y_test, pred=predicted_qualities)
 
                 logging.info("accuracy_score: {}".format(accuracy))
                 logging.info("f1_score: {}".format(f1))

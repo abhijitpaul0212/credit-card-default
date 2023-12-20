@@ -26,5 +26,6 @@ class JSONProcessor(DataProcessor):
 
 class DBProcessor(DataProcessor):
     def process_data(self, uri: str, collection: str, **kwargs):
+        data = Utils().get_data_from_database(uri, collection)
         logging.info("Dataset from Database loaded sucessfully")
-        return Utils().get_data_from_database(uri, collection)
+        return data

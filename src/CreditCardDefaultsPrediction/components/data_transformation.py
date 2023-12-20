@@ -9,7 +9,6 @@ from src.CreditCardDefaultsPrediction.logger import logging
 from src.CreditCardDefaultsPrediction.exception import CustomException
 from src.CreditCardDefaultsPrediction.utils.utils import Utils
 from src.CreditCardDefaultsPrediction.utils.data_processor import CSVProcessor
-from src.CreditCardDefaultsPrediction.utils.transformer import UpperBoundCalculator, ClipTransformer, PositiveTransformer, OutlierTransformer
 
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
@@ -61,7 +60,7 @@ class DataTransformation:
             preprocessor = ColumnTransformer([
                 ('num_pipeline', num_pipeline, numerical_features),
                 ('cat_pipeline', cat_pipeline, categorical_features)
-            ])
+            ], remainder='passthrough')
 
             return preprocessor
         
@@ -80,12 +79,10 @@ class DataTransformation:
         
         def update_column_values(df):
             # Modify 'EDUCATION' column
-            fil_education = (df['EDUCATION'] == 5) | (df['EDUCATION'] == 6) | (df['EDUCATION'] == 0)
-            df.loc[fil_education, 'EDUCATION'] = 4
+            df['EDUCATION'] = df['EDUCATION'].map({0: 4, 1: 1, 2: 2, 3: 3, 4: 4, 5: 4, 6: 4})            
 
             # Modify 'MARRIAGE' column
-            fil_marriage = df['MARRIAGE'] == 0
-            df.loc[fil_marriage, 'MARRIAGE'] = 3
+            df['MARRIAGE'] = df['MARRIAGE'].map({0: 3, 1: 1, 2: 2, 3: 3})
 
             logging.info("EDUCATION & MARRIAGE column's values are merged which has lesser counts")
             return df
