@@ -71,6 +71,8 @@ The XGBClassifier model emerged as the most effective have below metric scores:
 5. Detailed Project Report (DPR): [DPR_CreditCardDefaultDetection.pdf](https://github.com/abhijitpaul0212/credit-card-default/blob/main/docs/DPR_CreditCardDefaultDetection.pptx)
 6. Project Demo Video: [https://youtu.be/8lv5jNUXcKQ?si=Ff1MIxzQMp9MBvj1](https://youtu.be/kH6FAdevtmw)
 
+## Snaptshot of HuggingFace Dashboard
+![image](https://github.com/abhijitpaul0212/Credit-Card-Default-Detection/assets/9966441/eb158011-03d0-45a2-833a-f643ef99ecdf)
 
 ## Contributors
 * Abhijit Paul
