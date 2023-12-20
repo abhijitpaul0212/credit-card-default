@@ -15,9 +15,8 @@ data.drop(['DEFAULT_PAYMENT', "_id", "ID"], axis=1, inplace=True)
 
 # Design Streamlit Page
 st.write("""
-# Credit Card Default Detection
-
-This app predicts the **Credit Card Payment Defaults**!
+# Credit Card Defaults Prediction
+This app predicts the **Credit Card Defaults**!
 """)
 st.write('---')
 
@@ -140,20 +139,34 @@ def user_input_features(data):
     pay_apr = st.sidebar.selectbox('PAY APRIL:', list(pay_apr_dict.keys()))
 
     # TextField to enter Bill AMOUNTS
-    bill_amount_sept = st.number_input("BILL AMOUNT SEPTEMBER:")
-    bill_amount_aug = st.number_input("BILL AMOUNT AUGUST:")
-    bill_amount_jul = st.number_input("BILL AMOUNT JULY:")
-    bill_amount_jun = st.number_input("BILL AMOUNT JUNE:")
-    bill_amount_may = st.number_input("BILL AMOUNT MAY:")
-    bill_amount_apr = st.number_input("BILL AMOUNT APRIL:")
+
+    # Create six columns
+    bill_columns = st.columns(6)
+
+    # Add a textfield to each column
+    bill_amount_sept, bill_amount_aug, bill_amount_jul, bill_amount_jun, bill_amount_may, bill_amount_apr = bill_columns
+
+    bill_amount_sept = bill_amount_sept.number_input("BILL AMOUNT SEPTEMBER:")
+    bill_amount_aug = bill_amount_aug.number_input("BILL AMOUNT AUGUST:")
+    bill_amount_jul = bill_amount_jul.number_input("BILL AMOUNT JULY:")
+    bill_amount_jun = bill_amount_jun.number_input("BILL AMOUNT JUNE:")
+    bill_amount_may = bill_amount_may.number_input("BILL AMOUNT MAY:")
+    bill_amount_apr = bill_amount_apr.number_input("BILL AMOUNT APRIL:")
 
     # TextField to enter PAID AMOUNTS
-    pay_amount_sept = st.number_input("PAY AMOUNT SEPTEMBER:")
-    pay_amount_aug = st.number_input("PAY AMOUNT AUGUST:")
-    pay_amount_jul = st.number_input("PAY AMOUNT JULY:")
-    pay_amount_jun = st.number_input("PAY AMOUNT JUNE:")
-    pay_amount_may = st.number_input("PAY AMOUNT MAY:")
-    pay_amount_apr = st.number_input("PAY AMOUNT APRIL:")
+
+     # Create six columns
+    pay_columns = st.columns(6)
+
+     # Add a textfield to each column
+    pay_amount_sept, pay_amount_aug, pay_amount_jul, pay_amount_jun, pay_amount_may, pay_amount_apr = pay_columns
+    
+    pay_amount_sept = pay_amount_sept.number_input("PAY AMOUNT SEPTEMBER:")
+    pay_amount_aug = pay_amount_aug.number_input("PAY AMOUNT AUGUST:")
+    pay_amount_jul = pay_amount_jul.number_input("PAY AMOUNT JULY:")
+    pay_amount_jun = pay_amount_jun.number_input("PAY AMOUNT JUNE:")
+    pay_amount_may = pay_amount_may.number_input("PAY AMOUNT MAY:")
+    pay_amount_apr = pay_amount_apr.number_input("PAY AMOUNT APRIL:")
 
     data = {
                 'LIMIT_BAL': float(limit_balance),
