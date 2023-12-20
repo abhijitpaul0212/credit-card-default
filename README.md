@@ -9,11 +9,10 @@ app_file: streamlit_app.py
 pinned: false
 ---
 
-# Credit Card Default Prediction App
+# Credit Card Default Detection
 
 ## OBJECTIVE
-The objective of this project is to create and deploy an application for my classification model. During the model training process, I selected the best classfification model and incorporated it into a pipeline to better predict the risk of credit card payment defaults. 
-
+This project focuses on building a credit card fault detection model using machine learning techniques. The model aims to predict default payments based on various demographic and credit-related features.
 
 ## Dataset
 This dataset contains information on default payments, demographic factors, credit data, history of payment, and bill statements of credit card clients in Taiwan from April 2005 to September 2005. 
@@ -29,8 +28,8 @@ or Kaggle website at https://www.kaggle.com/code/selener/prediction-of-credit-ca
 3. Data Cleaning: Data cleaning is the process of identifying and correcting or removing inaccuracies, inconsistencies, and handling missing values in a dataset. We inspected the dataset for duplicate values. The null value and outlier detection and treatment followed. For the imputation of the null value we used the Mean, Median, and Mode techniques, and for the outliers, we used the Clipping method to handle the outliers without any loss to the data.
 4. Feature Selection: At this step, we did the encoding of categorical features. We used the correlation coefficient, encoding, feature manipulation, and feature selection techniques to select the most relevant features. SMOTE is used to address the class imbalance in the target variable.
 5. Feature Scaling: We scaled the features to bring down all of the values to a similar range. 
-6. Model Training and Implementation: We pass the features to 8 different classification models. We also did hyperparameter tuning using GridSearchCV.
-7. Performance Evaluation: After passing it to various classification models and calculating the metrics, we choose a final model that can make better predictions. We evaluated different performance metrics and chose our final model using the f1 score and recall score.
+6. Model Selection and Implementation: We pass the features to SVM, KNN, Decision Tree, Gradient Boosting, Logistic Regression, AdaBoosting, Naive Bayes & XGBoost classification algorithms. We also did hyperparameter tuning using GridSearchCV.
+7. Performance Evaluation: After passing it to various classification models and calculating the metrics viz. accuracy, precision, recall, f1, roc-auc,  we choose a final model that can make best predictions.
 
 ## Artifacts
 
@@ -50,14 +49,23 @@ MongoDB
 4. GradientBoostingClassifier
 5. KNeighborsClassifier
 6. DecisionTreeClassifier
+7. AdaBoost
+8. NaiveBayes
+9. XGBoost
 
-#### End Result
-* Best Model with params: SVC(C=0.01, degree=5, kernel='poly')
-* Training Dataset - Recall Score: : 0.9293388415965623
-* Validation Dataset - Recall Score: 0.9144074360960496
-* Test Dataset - Recall Score: 0.9322429906542056
+## Final Result
+The XGBClassifier model emerged as the most effective, achieving an accuracy of 83% on the test set along with Recall: 80%, ROC-AUC: 91% Precision: 84% and F1: 81%.
+
+## Video Demonstration
+Video Demonstration: Check out this link for a demonstration of the HTML page.
 
 ## LIVE
 * https://credit-card-defaults-prediction.streamlit.app/
 * https://huggingface.co/spaces/abhijitpaul/credit-card-default
 
+## Contributors
+Gouthami K
+Abhijit Paul
+
+## License
+This project is licensed under the MIT License.
