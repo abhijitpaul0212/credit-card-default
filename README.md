@@ -11,7 +11,7 @@ pinned: false
 
 # Credit Card Default Detection
 
-## OBJECTIVE
+## Objective
 This project focuses on building a credit card fault detection model using machine learning techniques. The model aims to predict default payments based on various demographic and credit-related features.
 
 ## Dataset
