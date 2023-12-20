@@ -54,12 +54,18 @@ MongoDB
 ## Final Result
 The XGBClassifier model emerged as the most effective, achieving an accuracy of 83% on the test set along with Recall: 80%, ROC-AUC: 91% Precision: 84% and F1: 81%.
 
-## Video Demonstration
-Video Demonstration: Check out this link for a demonstration of the HTML page.
-
-## LIVE
+## Deployed URLs
 * https://credit-card-defaults-prediction.streamlit.app/
 * https://huggingface.co/spaces/abhijitpaul/credit-card-default
+
+## Project Artifacts
+1. High Level Design (HLD): [HLD_CreditCardDefaultDetection.pdf](https://github.com/abhijitpaul0212/credit-card-default/blob/main/docs/HLD_CreditCardDefaultDetection.pdf)
+2. Low Level Design (LLD): [LLD_CreditCardDefaultDetection.pdf](https://github.com/abhijitpaul0212/credit-card-default/blob/main/docs/LLD_CreditCardDefaultDetection.pdf)
+3. Architecture Design: [Architechture_CreditCardDefaultDetection.pdf](https://github.com/abhijitpaul0212/credit-card-default/blob/main/docs/Architecture_CreditCardDefaultDetection.pdf)
+4. Wireframe Document: [Wireframe_CreditCardDefaultDetection.pdf](https://github.com/abhijitpaul0212/credit-card-default/blob/main/docs/Wireframe_CreditCardDefaultDetection.pdf)
+5. Detailed Project Report (DPR): [DPR_CreditCardDefaultDetection.pdf](https://github.com/abhijitpaul0212/credit-card-default/blob/main/docs/DPR_CreditCardDefaultDetection.pptx)
+6. Project Demo Video: [https://youtu.be/8lv5jNUXcKQ?si=Ff1MIxzQMp9MBvj1](https://youtu.be/kH6FAdevtmw)
+
 
 ## Contributors
 Gouthami K
