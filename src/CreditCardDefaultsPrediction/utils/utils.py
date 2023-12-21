@@ -85,6 +85,25 @@ class Utils:
         :return: The processed data
         """
         return data_processor.process_data(path, filename, **kwargs)
+    
+    def timer(self, start_time=None):
+        """
+        The timer function is a simple function that takes in an optional start_time argument. 
+        If no start_time is provided, the current time will be returned. If a start_time is provided, 
+        the difference between the current time and the given start_time will be printed.
+        
+        :param start_time: Datetime: Start the timer
+        :return: None
+        """
+        
+        if not start_time:
+            start_time = datetime.now()
+            return start_time
+        
+        elif start_time:
+            thour, temp_sec = divmod((datetime.now() - start_time).total_seconds(), 3600)
+            tmin, tsec = divmod(temp_sec, 60)
+            logging.info("Model took: {} hours {} minutes and {} seconds".format(thour, tmin, round(tsec, 2)))
 
     def predict(self, model_name, model, features, label):
         """
@@ -114,17 +133,7 @@ class Utils:
         :param val_features: DataFrame: Validation features to the evaluate_models function
         :param val_label: Validation labels to the predict function
         :return: tuple: The best model and a dictionary of the model report
-        """            
-        def timer(start_time=None):
-            if not start_time:
-                start_time = datetime.now()
-                return start_time
-            
-            elif start_time:
-                thour, temp_sec = divmod((datetime.now() - start_time).total_seconds(), 3600)
-                tmin, tsec = divmod(temp_sec, 60)
-                logging.info("Model took: {} hours {} minutes and {} seconds".format(thour, tmin, round(tsec, 2)))
-
+        """         
         np.random.seed(42)        
         TRAINING_SCORE = {}
         for model_name, (model, params) in models.items():
@@ -132,9 +141,9 @@ class Utils:
             logging.info("\n\n========================= {} =======================".format(model_name))
             random_search_cv = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=5, scoring=metric, n_jobs=-1, cv=5, verbose=verbose, random_state=5)
 
-            start_time = timer(None)
+            start_time = self.timer(None)
             random_search_cv.fit(train_features, train_label)
-            timer(start_time)
+            self.timer(start_time)
 
             logging.info("BEST PARAMS: {}".format(random_search_cv.best_params_))
             logging.info("BEST TRAINING SCORE USING HYPER-PARAMTERS: {}".format(round(random_search_cv.best_score_, 2)))
@@ -183,10 +192,10 @@ class Utils:
         self.MODEL_REPORT = {}
         for model_name, model in models.items():            
             logging.info("\n\n========================= {} =======================".format(model_name))
-            start = time()
+
+            start_time = self.timer(None)
             model.fit(train_features, train_label)
-            end = time()
-            logging.info("Model took: {} secs".format(round(end-start, 4)))
+            self.timer(start_time)
 
             # Evaluate the best model on the train & test set
             self.predict(model_name=model_name, model=model, features=test_features, label=test_label)

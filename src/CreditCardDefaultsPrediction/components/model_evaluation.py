@@ -7,6 +7,7 @@ import mlflow
 import mlflow.sklearn
 import numpy as np
 
+from sklearn.model_selection import cross_val_score
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score, roc_auc_score
 from urllib.parse import urlparse
 from dataclasses import dataclass
@@ -19,12 +20,13 @@ from src.CreditCardDefaultsPrediction.utils.utils import Utils
 @dataclass
 class ModelEvaluation:
 
-    def eval_metrics(self, actual, pred):
-        accuracy = round(accuracy_score(actual, pred), 2)
-        f1 = round(f1_score(actual, pred), 2)
-        precision = round(precision_score(actual, pred), 2)
-        recall = round(recall_score(actual, pred), 2)
-        roc_auc = round(roc_auc_score(actual, pred), 2)
+    def eval_metrics(self, model, features, label):
+
+        accuracy = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='accuracy').mean(), 2)
+        f1 = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='f1').mean(), 2)
+        precision = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='precision').mean(), 2)
+        recall = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='recall').mean(), 2)
+        roc_auc = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='roc_auc').mean(), 2)
         return accuracy, f1, precision, recall, roc_auc
     
     def initiate_model_evaluation(self, test_array):
@@ -43,9 +45,9 @@ class ModelEvaluation:
             print(tracking_url_type)
 
             with mlflow.start_run():
-                predicted_qualities = model.predict(X_test)
+                # predicted_qualities = model.predict(X_test)
 
-                (accuracy, f1, precision, recall, roc_auc) = self.eval_metrics(actual=y_test, pred=predicted_qualities)
+                (accuracy, f1, precision, recall, roc_auc) = self.eval_metrics(model, X_test, y_test)
                 # self.eval_metrics(actual=y_test, pred=predicted_qualities)
 
                 logging.info("accuracy_score: {}".format(accuracy))

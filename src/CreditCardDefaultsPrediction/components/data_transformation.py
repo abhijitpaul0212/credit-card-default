@@ -68,7 +68,7 @@ class DataTransformation:
             logging.error("Exception occured in Data Transformation")
             raise CustomException(e, sys)
 
-    def initiate_data_transformation(self, train_path, test_path):
+    def initiate_data_transformation(self, train_path, test_path, val_path):
 
         def replace_categories(df):
             df = df.replace({'SEX': {1: 'MALE', 2: 'FEMALE'},
@@ -90,9 +90,11 @@ class DataTransformation:
         try:
             train_df = self.utils.run_data_pipeline(self.csv_processor, path=None, filename=train_path)
             test_df = self.utils.run_data_pipeline(self.csv_processor, path=None, filename=test_path)
+            val_df = self.utils.run_data_pipeline(self.csv_processor, path=None, filename=val_path)
             
             logging.info(f'Train Dataframe Head : \n{train_df.head().to_string()}')
             logging.info(f'Test Dataframe Head : \n{test_df.head().to_string()}')
+            logging.info(f'Validation Dataframe Head : \n{val_df.head().to_string()}')
 
             # Handle imbalance data
             train_df = train_df.drop(columns=['_id'], axis=1)
@@ -100,10 +102,14 @@ class DataTransformation:
 
             test_df = test_df.drop(columns=['_id'], axis=1)
             test_df = self.utils.smote_balance(test_df)
+
+            val_df = val_df.drop(columns=['_id'], axis=1)
+            val_df = self.utils.smote_balance(val_df)
             
             # Modify column data
             train_df = update_column_values(train_df)
             test_df = update_column_values(test_df)
+            val_df = update_column_values(val_df)
 
             # Replace categories
             # train_df = replace_categories(train_df)
@@ -118,22 +124,30 @@ class DataTransformation:
             input_feature_test_df = test_df.drop(columns=drop_columns, axis=1)
             target_feature_test_df = test_df[target_column_name]
 
+            input_feature_val_df = val_df.drop(columns=drop_columns, axis=1)
+            target_feature_val_df = val_df[target_column_name]
+
             # Apply transformation
             preprocessing_obj = self.transform_data()
             preprocessing_obj.fit(input_feature_train_df)
+            
             input_feature_train_arr = preprocessing_obj.transform(input_feature_train_df)
             input_feature_test_arr = preprocessing_obj.transform(input_feature_test_df)
+            input_feature_val_arr = preprocessing_obj.transform(input_feature_val_df)
             
             input_feature_train_arr_df = pd.DataFrame(input_feature_train_arr, columns=preprocessing_obj.get_feature_names_out())
             input_feature_test_arr_df = pd.DataFrame(input_feature_test_arr, columns=preprocessing_obj.get_feature_names_out())
+            input_feature_val_arr_df = pd.DataFrame(input_feature_val_arr, columns=preprocessing_obj.get_feature_names_out())
 
             logging.info("Applying preprocessing object on training, vdalidation and testing datasets")
 
             train_df = pd.concat([input_feature_train_arr_df, target_feature_train_df], axis=1)
             test_df = pd.concat([input_feature_test_arr_df, target_feature_test_df], axis=1)
+            val_df = pd.concat([input_feature_val_arr_df, target_feature_val_df], axis=1)
 
             logging.info(f'Processed Train Dataframe Head : \n{train_df.head().to_string()}')
             logging.info(f'Processed Test Dataframe Head : \n{test_df.head().to_string()}')
+            logging.info(f'Processed Validation Dataframe Head : \n{val_df.head().to_string()}')
 
             self.utils.save_object(
                 file_path=self.data_transformation_config.preprocessor_obj_path,
@@ -144,7 +158,8 @@ class DataTransformation:
             
             return (
                 train_df,
-                test_df
+                test_df,
+                val_df
             )
 
         except Exception as e:

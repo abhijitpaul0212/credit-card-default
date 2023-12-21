@@ -45,13 +45,13 @@ class ModelTrainer:
                 test_dataframe.iloc[:, -1])
             
             # models = {
+            #         'XGBClassifier': XGBClassifier(),
             #         'DecisionTree': DecisionTreeClassifier(),
-            #         'SVM': SVC(),
+            #         'SVC': SVC(),
             #         'LogisticRegression': LogisticRegression(),
-            #         'NearestNeighbors': KNeighborsClassifier(),
-            #         'GradientBoosting': GradientBoostingClassifier(),
-            #         'AdaBoost': AdaBoostClassifier(),
-            #         'NaiveBayes': GaussianNB()
+            #         'KNeighborsClassifier': KNeighborsClassifier(),
+            #         'GradientBoostingClassifier': GradientBoostingClassifier(),
+            #         'RandomForestClassifier': RandomForestClassifier()
             #     }
             
             models = {
@@ -87,7 +87,11 @@ class ModelTrainer:
                                     'n_estimators': [5, 10, 15, 30], 
                                     'max_depth': [5, 20, 50, 100]})
                     }
+
+            # model evaluation without any hyper-paramter tuning            
+            # best_model = self.utils.evaluate_models(models, X_train, y_train, X_test, y_test, metric="roc_auc")
             
+            # model evaluation along with hyper-paramter tuning
             best_model = self.utils.evaluate_models_with_hyperparameter(models, X_train, y_train, X_test, y_test, metric="roc_auc", verbose=0)
             
             self.utils.save_object(
