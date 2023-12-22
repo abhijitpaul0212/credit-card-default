@@ -1,5 +1,7 @@
 # utils.py
 from cProfile import label
+import mlflow
+import mlflow.sklearn
 import pickle
 import sys
 import os
@@ -13,6 +15,8 @@ from src.CreditCardDefaultsPrediction.logger import logging
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, cross_val_score
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score, accuracy_score, roc_auc_score
 from imblearn.over_sampling import SMOTE
+from src.CreditCardDefaultsPrediction.utils.mlflow_setup import setup_mlflow_experiment
+import src.CreditCardDefaultsPrediction.utils.mlflow_setup as mlflow_setup
 
 
 class Utils:
@@ -113,14 +117,21 @@ class Utils:
         :param features: DataFrame: Features to be used for prediction
         :param label: DataFrame: Label to be used for prediction
         :return: dict: A dictionary with the model, accuracy score, f-score, precision score and recall score
-        """  
+        """
+
+        accuracy = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='accuracy').mean(), 2)
+        f1 = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='f1').mean(), 2)
+        precision = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='precision').mean(), 2)
+        recall = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='recall').mean(), 2)
+        roc_auc = round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='roc_auc').mean(), 2)
+
         self.MODEL_REPORT[model_name] = {
             'model': model,
-            'accuracy': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='accuracy').mean(), 2),
-            'f1': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='f1').mean(), 2),
-            'precision': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='precision').mean(), 2),
-            'recall': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='recall').mean(), 2),
-            'roc_auc': round(cross_val_score(model, features, label, cv=10, n_jobs=-1, scoring='roc_auc').mean(), 2)}
+            'accuracy': accuracy,
+            'f1': f1,
+            'precision': precision,
+            'recall': recall,
+            'roc_auc': roc_auc}
         
     def evaluate_models_with_hyperparameter(self, models: dict, train_features, train_label, test_features, test_label, metric='accuracy', verbose=0):
         """
@@ -136,21 +147,35 @@ class Utils:
         """         
         np.random.seed(42)        
         TRAINING_SCORE = {}
+
+        def log_params_with_prefix(prefix, params):
+            """Log parameters with a given prefix to avoid conflicts."""
+            for key, value in params.items():
+                log_key = f"{prefix}_{key}"
+                mlflow.log_param(log_key, value)
+                
         for model_name, (model, params) in models.items():
-            # for model, param in items.items():                
-            logging.info("\n\n========================= {} =======================".format(model_name))
-            random_search_cv = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=5, scoring=metric, n_jobs=-1, cv=5, verbose=verbose, random_state=5)
 
-            start_time = self.timer(None)
-            random_search_cv.fit(train_features, train_label)
-            self.timer(start_time)
+            with mlflow.start_run(run_id=mlflow_setup.get_active_run_id(), nested=True):               
+                logging.info("\n\n========================= {} =======================".format(model_name))
+                mlflow.set_tag("model_name", model_name)
 
-            logging.info("BEST PARAMS: {}".format(random_search_cv.best_params_))
-            logging.info("BEST TRAINING SCORE USING HYPER-PARAMTERS: {}".format(round(random_search_cv.best_score_, 2)))
-            TRAINING_SCORE[model_name] = round(random_search_cv.best_score_, 2)
+                random_search_cv = RandomizedSearchCV(estimator=model, param_distributions=params, n_iter=5, scoring=metric, n_jobs=-1, cv=5, verbose=verbose, random_state=5)
 
-            self.predict(model_name=model_name, model=random_search_cv.best_estimator_, features=test_features, label=test_label)
-            
+                start_time = self.timer(None)
+                random_search_cv.fit(train_features, train_label)
+                self.timer(start_time)
+
+                logging.info("BEST PARAMS: {}".format(random_search_cv.best_params_))
+                log_params_with_prefix(model_name, random_search_cv.best_params_)
+
+                logging.info("BEST TRAINING SCORE USING HYPER-PARAMTERS: {}".format(round(random_search_cv.best_score_, 2)))
+                TRAINING_SCORE[model_name] = round(random_search_cv.best_score_, 2)
+
+                mlflow.log_metric("{} score".format(metric), round(random_search_cv.best_score_, 2))
+
+                self.predict(model_name=model_name, model=random_search_cv.best_estimator_, features=test_features, label=test_label)
+                
         logging.info("All training scores: {}".format(TRAINING_SCORE))
         logging.info("All testing scores: {}".format(self.MODEL_REPORT))
 
@@ -168,7 +193,6 @@ class Utils:
         logging.info("BEST SCORE: {}".format(best_score))
 
         return best_model
-
     
     def evaluate_models(self, models: dict, train_features, train_label, test_features, test_label, metric='accuracy'):
         """
@@ -181,13 +205,7 @@ class Utils:
         :param val_features: DataFrame: Validation features to the evaluate_models function
         :param val_label: Validation labels to the predict function
         :return: tuple: The best model and a dictionary of the model report
-        """     
-        # def find_model_by_score(dictionary, target_value):
-        #     for key, value in dictionary.items():
-        #         if value == target_value:
-        #             return key
-        #     return None
-
+        """ 
         np.random.seed(42)        
         self.MODEL_REPORT = {}
         for model_name, model in models.items():            

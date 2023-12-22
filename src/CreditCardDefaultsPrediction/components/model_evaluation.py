@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from src.CreditCardDefaultsPrediction.logger import logging
 from src.CreditCardDefaultsPrediction.exception import CustomException
 from src.CreditCardDefaultsPrediction.utils.utils import Utils
+from src.CreditCardDefaultsPrediction.utils.mlflow_setup import setup_mlflow_experiment
+import src.CreditCardDefaultsPrediction.utils.mlflow_setup as mlflow_setup
 
 
 @dataclass
@@ -35,35 +37,24 @@ class ModelEvaluation:
             model_path = os.path.join("artifacts", "model.pkl")
             model = Utils().load_object(model_path)
 
-            """
-            If MLFLOW_TRACKING_URI, MLFLOW_TRACKING_USERNAME & MLFLOW_TRACKING_PASSWORD are set correctly, 
-            then tracking_url_type = https  --> DagsHub MLFlow
-            else tracking_url_type = file --> Local MLFLow
-            """
-            mlflow.set_registry_uri("https://dagshub.com/abhijitpaul0212/Credit-Card-Defaults-Prediction.mlflow")
-            tracking_url_type = urlparse(mlflow.get_tracking_uri()).scheme
-            print(tracking_url_type)
-
-            with mlflow.start_run():
-                # predicted_qualities = model.predict(X_test)
+            with mlflow.start_run(run_id=mlflow_setup.get_active_run_id(), nested=True):
 
                 (accuracy, f1, precision, recall, roc_auc) = self.eval_metrics(model, X_test, y_test)
-                # self.eval_metrics(actual=y_test, pred=predicted_qualities)
 
                 logging.info("accuracy_score: {}".format(accuracy))
                 logging.info("f1_score: {}".format(f1))
                 logging.info("precision_score: {}".format(precision))
                 logging.info("recall_score: {}".format(recall))
                 logging.info("roc_auc_score: {}".format(roc_auc))
-                mlflow.log_metric("accuracy_score", accuracy)
-                mlflow.log_metric("f1_score", f1)
-                mlflow.log_metric("precision_score", precision)
-                mlflow.log_metric("recall_score", recall)
-                mlflow.log_metric("roc_auc_score", roc_auc)
 
-                if tracking_url_type != "file":
-                    mlflow.sklearn.log_model(model, "model", registered_model_name="ml_model")
-                else:
-                    mlflow.sklearn.log_model(model, "model")
+                mlflow.log_metric("accuracy score", accuracy)
+                mlflow.log_metric("f1 score", f1)
+                mlflow.log_metric("precision score", precision)
+                mlflow.log_metric("recall score", recall)
+                mlflow.log_metric("roc_auc score", roc_auc)
+                mlflow.end_run()
+
+                mlflow.sklearn.log_model(model, "model")
+                
         except Exception as e:
             raise CustomException(e, sys)
