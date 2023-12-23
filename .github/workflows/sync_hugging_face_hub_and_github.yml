@@ -7,11 +7,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  pull-code:
+  git-pull:
       runs-on: ubuntu-latest
       steps:
-      - name: Pull Code
-        run: git pull origin main
+      - name: Checkout Repository
+        uses: actions/checkout@v2  # This action checks out your repository
+
+      - name: Git Pull
+        run: |
+          git pull origin main
   clear-cache:
       runs-on: ubuntu-latest
       steps:
