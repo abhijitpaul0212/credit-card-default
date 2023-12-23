@@ -7,6 +7,28 @@ on:
   workflow_dispatch:
 
 jobs:
+  clear-cache:
+      runs-on: ubuntu-latest
+  
+      steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+  
+      - name: Delete Cached Files
+        run: |
+          # Add commands here to delete specific files or directories from the cache
+          rm -rf ~/.npm
+          rm -rf ~/.cache
+  
+      - name: Clear Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ~/.cache
+          key: ${{ runner.os }}-clear-cache-${{ hashFiles('**/*.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-clear-cache-
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
