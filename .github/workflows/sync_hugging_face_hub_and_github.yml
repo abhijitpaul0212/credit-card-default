@@ -7,6 +7,11 @@ on:
   workflow_dispatch:
 
 jobs:
+  pull-code:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Pull Code
+        run: git pull origin main
   clear-cache:
       runs-on: ubuntu-latest
       steps:
