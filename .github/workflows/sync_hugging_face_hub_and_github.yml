@@ -22,11 +22,10 @@ jobs:
       runs-on: ubuntu-latest
       steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2  # This action checks out your repository
+        uses: actions/checkout@v3  # This action checks out your repository
 
       - name: Git Pull
-        run: |
-          git pull origin main
+        run: git pull origin main
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
