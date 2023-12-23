@@ -7,6 +7,19 @@ on:
   workflow_dispatch:
 
 jobs:
+  clear-cache:
+      runs-on: ubuntu-latest
+      
+      steps:
+      - name: Clear Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ~/.cache
+          key: ${{ runner.os }}-clear-cache-${{ hashFiles('**/*.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-clear-cache-
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
