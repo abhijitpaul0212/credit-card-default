@@ -1,5 +1,6 @@
 # utils.py
 from cProfile import label
+import gzip
 import mlflow
 import mlflow.sklearn
 import pickle
@@ -36,7 +37,7 @@ class Utils:
             dir_path = os.path.dirname(file_path)
             os.makedirs(dir_path, exist_ok=True)
 
-            with open(file_path, "wb") as file_obj:
+            with gzip.open(file_path, "wb") as file_obj:
                 pickle.dump(obj, file_obj)
                 logging.info(f"File is saved at '{file_path}' successfully.")
         except Exception as e:
@@ -51,7 +52,7 @@ class Utils:
         :return: None
         """
         try:
-            with open(file_path, "rb") as file_obj:
+            with gzip.open(file_path, "rb") as file_obj:
                 logging.info(f"File at '{file_path}' has been successfully loaded.")
                 return pickle.load(file_obj)                
         except Exception as e:

@@ -34,7 +34,7 @@ class ModelEvaluation:
     def initiate_model_evaluation(self, test_array):
         try:
             X_test, y_test = (test_array.iloc[:, :-1], test_array.iloc[:, -1])
-            model_path = os.path.join("artifacts", "model.pkl")
+            model_path = os.path.join("artifacts", "model.pkl.gz")
             model = Utils().load_object(model_path)
 
             with mlflow.start_run(run_id=mlflow_setup.get_active_run_id(), nested=True):

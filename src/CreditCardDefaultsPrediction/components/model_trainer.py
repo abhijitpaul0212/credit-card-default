@@ -25,7 +25,7 @@ class ModelTrainerConfig:
     """
     This is configuration class FOR Model Trainer
     """
-    trained_model_obj_path: str = os.path.join("artifacts", "model.pkl")
+    trained_model_obj_path: str = os.path.join("artifacts", "model.pkl.gz")
     trained_model_report_path: str = os.path.join('artifacts', 'model_report.pkl')
 
 

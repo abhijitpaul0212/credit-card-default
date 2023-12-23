@@ -18,7 +18,7 @@ class PredictPipeline:
         try:
             logging.info('Prediction Pipeline initiated')
             preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
-            model_path = os.path.join("artifacts", "model.pkl")
+            model_path = os.path.join("artifacts", "model.pkl.gz")
 
             preprocessor = self.utils.load_object(preprocessor_path)
             model = self.utils.load_object(model_path)
