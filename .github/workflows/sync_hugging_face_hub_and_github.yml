@@ -7,29 +7,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  clear-cache:
-      runs-on: ubuntu-latest
-      steps:
-      - name: Clear Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache
-          key: ${{ runner.os }}-clear-cache-${{ hashFiles('**/*.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-clear-cache-
-  git-pull:
-      runs-on: ubuntu-latest
-      steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3  # This action checks out your repository
-
-      - name: Git Pull
-        run: git pull origin main
-      - name: delete
-        run: git rm "artifacts/model.pkl"
-      - name: commit
-        run: git commit -m "Remove artifacts/model.pkl"
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
